@@ -66,12 +66,12 @@ window.addEventListener('keydown', function(event) {
     var keycode = event.charCode || event.keyCode;
 
     // Decrease playback rate if '[' is pressed
-    if (keycode === 91 || keycode === 123 || keycode === 219) {
+    if (keycode === 219) {
         modifyPlaybackRate(-speedStep);
     }
 
     // Increase playback rate if ']' is pressed
-    if (keycode === 93 || keycode === 125 || keycode === 221) {
+    if (keycode === 221) {
         modifyPlaybackRate(speedStep);
     }
 });
