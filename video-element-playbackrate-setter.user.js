@@ -38,8 +38,8 @@ var hideTime = 0;
 function modifyPlaybackRate(rateDiff) {
     // Grab the video elements and set their playback rate
     var videoElement = document.getElementsByTagName("video")[0];
-    var newRate = Math.round((videoElement.playbackRate + rateDiff) * 100) / 100
-    videoElement.playbackRate = newRate
+    var newRate = Math.round((videoElement.playbackRate + rateDiff) * 10) / 10;
+    videoElement.playbackRate = newRate;
     
     // Show infobox if not already added and update rate indicator.
     if (videoElement && !document.getElementById("playbackrate-indicator")) {
