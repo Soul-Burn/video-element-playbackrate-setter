@@ -65,15 +65,15 @@ function hideInfobox() {
 
 // Mimic vlc keyboard shortcuts
 window.addEventListener('keydown', function(event) {
-    var keycode = event.charCode || event.keyCode;
+    var keycode = event.code;
 
     // Decrease playback rate if '[' is pressed
-    if (keycode === 219) {
+    if (event.code === "BracketLeft") {
         modifyPlaybackRate(-speedStep);
     }
 
     // Increase playback rate if ']' is pressed
-    if (keycode === 221) {
+    if (event.code === "BracketRight") {
         modifyPlaybackRate(speedStep);
     }
 });
