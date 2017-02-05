@@ -7,10 +7,11 @@
 // @include      http*://*.gfycat.com/*
 // @include      http*://*.vimeo.com/*
 // @include      http*://vimeo.com/*
-// @include      https://www.facebook.com/video.php*
-// @include      https://www.facebook.com/*/videos/*
-// @include      https://www.kickstarter.com/*
+// @include      http*://*.facebook.com/*
+// @include      http*://www.kickstarter.com/*
 // @include      http*://www.periscope.tv/*
+// @include      http*://www.twitch.tv/*
+// @include      http*://vid.me/*
 // ==/UserScript==
 // 
 // if you want to extend the functionality of this script to other sites
@@ -23,32 +24,54 @@
 
 var speedStep = 0.1;
 
-var infobox = document.createElement("h1");
-infobox.setAttribute("id", "playbackrate-indicator");
-infobox.style.position = "absolute";
-infobox.style.top = "10%";
-infobox.style.right = "10%";
-infobox.style.color = "rgba(255, 0, 0, 1)";
-infobox.style.zIndex = "99999";  // ensures that it shows above other elements.
-infobox.style.visibility = "hidden";
-infobox.style.marginTop = "3%";
-
+function makeInfobox() {
+    var infobox = document.createElement("h1");
+    infobox.style.position = "absolute";
+    infobox.style.top = "10%";
+    infobox.style.right = "10%";
+    infobox.style.color = "rgba(255, 0, 0, 1)";
+    infobox.style.zIndex = "99999";  // ensures that it shows above other elements.
+    infobox.style.visibility = "hidden";
+    infobox.style.marginTop = "3%";
+    infobox.className = "playbackrate-indicator";
+    return infobox;
+}
+    
 var hideTime = 0;
 
-function modifyPlaybackRate(rateDiff) {
+function modifyAll(rateDiff) {
+    var videoElements = document.getElementsByTagName("video");
+    for (var i = 0; i < videoElements.length; ++i) {
+        modifyPlaybackRate(videoElements[i], rateDiff);
+    }
+}
+
+function hasInfobox(element) {
+    var infoboxes = document.getElementsByClassName("playbackrate-indicator");
+    for (var i = 0; i < infoboxes.length; ++i) {
+        if (infoboxes[i].parentElement == element.parentElement) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function modifyPlaybackRate(videoElement, rateDiff) {
     // Grab the video elements and set their playback rate
-    var videoElement = document.getElementsByTagName("video")[0];
     var newRate = Math.round((videoElement.playbackRate + rateDiff) * 10) / 10;
     videoElement.playbackRate = newRate;
     
     // Show infobox if not already added and update rate indicator.
-    if (videoElement && !document.getElementById("playbackrate-indicator")) {
-        videoElement.parentElement.appendChild(infobox);
+    if (videoElement && !hasInfobox(videoElement)) {
+        videoElement.parentElement.appendChild(makeInfobox());
     }
-    
-    // Show and then hide the infobox
-    infobox.style.visibility = "visible";    
-    infobox.innerHTML = newRate + "x";
+
+    var infoboxes = document.getElementsByClassName("playbackrate-indicator");
+    for (var i = 0; i < infoboxes.length; ++i) {
+        // Show and then hide the infobox
+        infoboxes[i].style.visibility = "visible";    
+        infoboxes[i].innerHTML = newRate + "x";
+    }
     
     hideTime = new Date().getTime() + 1000;
     hideInfobox();
@@ -56,7 +79,10 @@ function modifyPlaybackRate(rateDiff) {
 
 function hideInfobox() {
     if (new Date().getTime() > hideTime) {
-        infobox.style.visibility = "hidden";
+        var infoboxes = document.getElementsByClassName("playbackrate-indicator");
+        for (var i = 0; i < infoboxes.length; ++i) {
+           infoboxes[i].style.visibility = "hidden";
+        }
     } else {
         setTimeout(hideInfobox, 100);
     }
@@ -69,11 +95,11 @@ window.addEventListener('keydown', function(event) {
 
     // Decrease playback rate if '[' is pressed
     if (event.code === "BracketLeft") {
-        modifyPlaybackRate(-speedStep);
+        modifyAll(-speedStep);
     }
 
     // Increase playback rate if ']' is pressed
     if (event.code === "BracketRight") {
-        modifyPlaybackRate(speedStep);
+        modifyAll(speedStep);
     }
 });
