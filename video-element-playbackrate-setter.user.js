@@ -44,37 +44,26 @@ function modifyAll(rateDiff) {
     for (var i = 0; i < videoElements.length; ++i) {
         modifyPlaybackRate(videoElements[i], rateDiff);
     }
-}
-
-function hasInfobox(element) {
-    var infoboxes = document.getElementsByClassName("playbackrate-indicator");
-    for (var i = 0; i < infoboxes.length; ++i) {
-        if (infoboxes[i].parentElement == element.parentElement) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function modifyPlaybackRate(videoElement, rateDiff) {
-    // Grab the video elements and set their playback rate
-    var newRate = Math.round((videoElement.playbackRate + rateDiff) * 10) / 10;
-    videoElement.playbackRate = newRate;
-    
-    // Show infobox if not already added and update rate indicator.
-    if (videoElement && !hasInfobox(videoElement)) {
-        videoElement.parentElement.appendChild(makeInfobox());
-    }
-
-    var infoboxes = document.getElementsByClassName("playbackrate-indicator");
-    for (var i = 0; i < infoboxes.length; ++i) {
-        // Show and then hide the infobox
-        infoboxes[i].style.visibility = "visible";    
-        infoboxes[i].innerHTML = newRate + "x";
-    }
     
     hideTime = new Date().getTime() + 1000;
     hideInfobox();
+}
+
+
+function modifyPlaybackRate(videoElement, rateDiff) {
+    // Grab the video elements and set their playback rate
+    var newRate = Math.round((videoElement.playbackRate + rateDiff) * 10) / 10 ;
+    videoElement.playbackRate = newRate;
+    
+    // Show infobox if not already added and update rate indicator.
+    if (videoElement && !videoElement.infobox) {
+        var infobox = makeInfobox();
+        videoElement.parentElement.appendChild(infobox);
+        videoElement.infobox = infobox; 
+    }
+    
+    videoElement.infobox.style.visibility = "visible";
+    videoElement.infobox.innerHTML = newRate + "x";
 }
 
 function hideInfobox() {
